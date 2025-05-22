@@ -1,7 +1,7 @@
 "use client"
 import {useState} from "react"
 import {PlusIcon, XMarkIcon, CheckIcon} from "@heroicons/react/24/outline"
-import {Todos, useCreateTodosMutation, useGetTodosQuery} from "@/api/apiSlice"
+import {Todos, useCreateTodosMutation, useGetTodosQuery, useUpdateTodosMutation, useDeleteTodosMutation} from "@/api/apiSlice"
 
 export default function Home() {
   const {data, error, isLoading} = useGetTodosQuery()
@@ -11,7 +11,7 @@ export default function Home() {
 
   const [newTodo, setNewTodo] = useState("")
 
-  const addTodo = () => {
+  const addTodo = async () => {
     if (!newTodo.trim()) return
 
     const todo: Todos = {
@@ -20,13 +20,34 @@ export default function Home() {
       isCompleted: false,
     }
 
-    createTodo(todo)
+    await createTodo(todo)
     setNewTodo("")
   }
 
-  const toggleTodo = (id: number) => {}
+  const [updateTodo] = useUpdateTodosMutation()
+  const [deleteTodoMutation] = useDeleteTodosMutation()
 
-  const deleteTodo = (id: number) => {}
+  const toggleTodo = async (id: string) => {
+    try {
+      const todo = data?.find((t: Todos) => t.id === id)
+      if (todo) {
+        await updateTodo({
+          ...todo,
+          isCompleted: !todo.isCompleted,
+        })
+      }
+    } catch (error) {
+      console.error("Error toggling todo:", error)
+    }
+  }
+
+  const deleteTodo = async (id: string) => {
+    try {
+      await deleteTodoMutation(id)
+    } catch (error) {
+      console.error("Error deleting todo:", error)
+    }
+  }
 
   return (
     <div className='min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8'>
@@ -55,14 +76,14 @@ export default function Home() {
               <li key={todo.id} className='flex items-center justify-between p-3 bg-gray-50 rounded-lg'>
                 <div className='flex items-center space-x-3'>
                   <button
-                    onClick={() => {}}
+                    onClick={() => toggleTodo(todo.id)}
                     className={`w-6 h-6 rounded-full flex items-center justify-center cursor-pointer ${todo.isCompleted ? "bg-green-500" : "bg-gray-200"}`}
                   >
                     {todo.isCompleted && <CheckIcon className='h-4 w-4 text-white' />}
                   </button>
                   <span className={`font-medium ${todo.isCompleted ? "line-through text-gray-400" : "text-gray-700"}`}>{todo.title}</span>
                 </div>
-                <button onClick={() => {}} className='text-red-500 hover:text-red-600'>
+                <button onClick={() => deleteTodo(todo.id)} className='text-red-500 hover:text-red-600'>
                   <XMarkIcon className='h-5 w-5' />
                 </button>
               </li>
