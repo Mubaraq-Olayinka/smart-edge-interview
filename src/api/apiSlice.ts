@@ -1,17 +1,29 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react"
 
-interface Todos {
-    id: string
+export interface Todos {
+  id: string
+  title: string
+  isCompleted: boolean
 }
 
 export const apiSlice = createApi({
-  reducerPath: 'api',
-  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3500' }), 
+  reducerPath: "api",
+  tagTypes: ["Todos"],
+  baseQuery: fetchBaseQuery({baseUrl: "http://localhost:3500"}),
   endpoints: (builder) => ({
     getTodos: builder.query<Todos[], void>({
-        query: () => '/todos',
+      providesTags: ["Todos"],
+      query: () => "/todos",
+    }),
+    createTodos: builder.mutation<Todos, Todos>({
+      query: (body: Todos) => ({
+        url: "/todos",
+        method: "POST",
+        body,
       }),
-  }), // define endpoints later
+      invalidatesTags: [{type: "Todos"}],
+    }),
+  }),
 })
 
-export const { useGetTodosQuery } = apiSlice
+export const {useGetTodosQuery, useCreateTodosMutation} = apiSlice
