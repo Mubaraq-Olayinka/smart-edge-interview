@@ -1,14 +1,13 @@
 // lib/store.ts
 import { configureStore } from '@reduxjs/toolkit'
-import { apiSlice } from '@/api/apiSlice'
+import apiReducer from '@/api/apiSlice'
+import createApiReducer from '@/api/createApiSlice'
 
 export const store = configureStore({
   reducer: {
-    [apiSlice.reducerPath]: apiSlice.reducer,
-    // Add more reducers here if needed
-  },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(apiSlice.middleware),
+    api: apiReducer,
+    createTodo: createApiReducer
+  }
 })
 
 // Type helpers
