@@ -1,6 +1,7 @@
 "use client";
 import {
   useCreateTodoMutation,
+  useDeleteTodoMutation,
   useEditTodoMutation,
   useGetTodosQuery,
 } from "@/api/apiSlice";
@@ -19,6 +20,7 @@ export default function Home() {
 
   const [mutate] = useCreateTodoMutation();
   const [editMutate] = useEditTodoMutation();
+  const [deleteMutate] = useDeleteTodoMutation();
   const [task, setTask] = useState("");
 
   const [editTask, setEditTask] = useState<Todos | null>(null);
@@ -36,11 +38,17 @@ export default function Home() {
   const handleAddTask = () => {
     if (editTask) {
       editMutate({ id: editTask.id, task });
+      setEditTask(null);
     } else {
       mutate({ task });
     }
     refetch();
     setTask("");
+  };
+
+  const handleDeleteTask = (id: string) => {
+    deleteMutate({ id });
+    refetch();
   };
 
   return (
@@ -62,7 +70,10 @@ export default function Home() {
                   >
                     Edit task
                   </button>
-                  <button className="bg-red-200 p-4 rounded-[10px]">
+                  <button
+                    onClick={() => handleDeleteTask(item.id)}
+                    className="bg-red-200 p-4 rounded-[10px]"
+                  >
                     Delete task
                   </button>
                 </div>
@@ -77,7 +88,7 @@ export default function Home() {
             <input
               type="text"
               name="task"
-              defaultValue={task}
+              value={task}
               className="border border-gray-300 px-3 py-2 rounded-[10px] focus:outline-none focus:border-blue-500"
               onChange={(e) => setTask(e.target.value)}
             />
@@ -87,7 +98,7 @@ export default function Home() {
             onClick={handleAddTask}
             className="bg-green-200 px-4 rounded-[10px] my-5"
           >
-            Add Task
+            {editTask ? "Update Task" : "Add Task"}
           </button>
         </section>
       </main>
