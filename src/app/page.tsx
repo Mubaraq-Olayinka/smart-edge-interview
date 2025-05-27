@@ -21,13 +21,13 @@ export default function Home() {
   const [editMutate] = useEditTodoMutation();
   const [task, setTask] = useState("");
 
-  useEffect(() => {
-    if (data) {
-      setTask(editTask?.task || "");
-    }
-  });
-
   const [editTask, setEditTask] = useState<Todos | null>(null);
+
+  useEffect(() => {
+    if (editTask) {
+      setTask(editTask.task);
+    }
+  }, [editTask]);
 
   const handleEditTask = (item: Todos) => {
     setEditTask(item);
@@ -38,7 +38,6 @@ export default function Home() {
       editMutate({ id: editTask.id, task });
     } else {
       mutate({ task });
-      setTask("");
     }
     refetch();
     setTask("");
