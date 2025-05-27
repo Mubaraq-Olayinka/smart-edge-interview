@@ -1,7 +1,20 @@
 {
   "todos": [
     {
-      "id": "1"
+      "id": "1",
+      "task": "Learn Next.js"
+    },
+    {
+      "task": "trial stage",
+      "id": "80d1"
+    },
+    {
+      "id": "e913",
+      "task": ""
+    },
+    {
+      "id": "8892",
+      "task": ""
     }
   ]
 }
