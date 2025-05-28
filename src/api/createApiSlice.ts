@@ -1,23 +1,35 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { todo } from 'node:test';
 // http://localhost:3500
+
+interface newTodo{
+    todo: string;
+}
 interface TodosState {
-    data: any[]
+    todo: string
     status: "idle" | "loading" | "success" | "failed";
     error: string | null;
 }
 
 const initial = {
-  data: [],
+  todo: [],
   status: "idle",
   error: null,
 }
 
+const newTodo = {
+    todo: ''
+}
+
 export const fetchTodos = createAsyncThunk ("todo/users", async () => {
 
-  const res = await fetch('http://localhost:3500/todos')
+  const res = await fetch('http://localhost:3500/todos', {
+    method: "POST",
+    body: JSON.stringify(newTodo),
+  })
 
   if(!res.ok) {
-    throw new Error('failed to fetch todos')
+    throw new Error('failed to create new todos')
   }
 
   const response = res.json();
@@ -25,8 +37,8 @@ export const fetchTodos = createAsyncThunk ("todo/users", async () => {
   return response;
 })
 
-export const apiSlice = createSlice({
-  name: 'api',
+export const createApiSlice = createSlice({
+  name: 'createTodo',
   initialState: initial,
   reducers: {}, // sync func
   extraReducers: (builder) => {
@@ -36,9 +48,9 @@ export const apiSlice = createSlice({
       state.error = null
     })
     .addCase(fetchTodos.fulfilled, (state, action) => {
-      state.data = action.payload
+      state.todo = action.payload
     })
   }
 })
 
-export default apiSlice.reducer
+export default createApiSlice.reducer
